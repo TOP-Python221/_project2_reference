@@ -15,29 +15,26 @@ end legend
 abstract class Creature {
     +name: str
     +birthdate: dt
-    +body
-    +mind
+    +body: Body
+    +mind: Mind
     ..properties..
     +age
     __
 }
-Creature::body o-- Body
-Creature::mind o-- Mind
+Creature <|-- Cat
+Creature <|-- Dog
+Creature <|-- Fox
+Creature <|-- Bear
 
 
-class Mind {
-    #{static}patterns: dict
-    +joy: int
-    +anger: int
-    ..properties..
-    +pattern
-    __
+class StatesCalculator {
+    +previous: StatesManager
+    -new_body() -> Body
+    -new_mind() -> Mind
+    +new_creature() -> Creature
 }
-class MindState {
-    +joy: int
-    +anger: int
-    +pattern
-}
+StatesCalculator::previous o-- StatesManager
+StatesCalculator --> Creature
 
 
 class Body {
@@ -48,7 +45,22 @@ class Body {
     +tired()
     +sleep()
 }
+Body --o Creature::body
+
+
+class Mind {
+    #{static}patterns: dict
+    +joy: int
+    +anger: int
+    ..properties..
+    +pattern
+    __
+}
+Mind --o Creature::mind
+
+
 class BodyState {
+    +timestamp: dt
     +health: int
     +stamina: int
     +hunger: int
@@ -56,11 +68,18 @@ class BodyState {
 }
 
 
+class MindState {
+    +timestamp: dt
+    +joy: int
+    +anger: int
+    +pattern
+}
+
+
 class StatesManager {
     +body_history: list[BodyState]
     +mind_last: MindState
 }
-
 
 
 class PersistenceManager {
