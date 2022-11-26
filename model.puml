@@ -1,0 +1,76 @@
+@startuml
+
+<style>
+    legend {
+        FontName Fira Mono
+    }
+</style>
+
+
+legend top left
+    from datetime import datetime as dt
+end legend
+
+
+abstract class Creature {
+    +name: str
+    +birthdate: dt
+    +body
+    +mind
+    ..properties..
+    +age
+    __
+}
+Creature::body o-- Body
+Creature::mind o-- Mind
+
+
+class Mind {
+    #{static}patterns: dict
+    +joy: int
+    +anger: int
+    ..properties..
+    +pattern
+    __
+}
+class MindState {
+    +joy: int
+    +anger: int
+    +pattern
+}
+
+
+class Body {
+    +health: int
+    +stamina: int
+    +hunger: int
+    +thirst: int
+    +tired()
+    +sleep()
+}
+class BodyState {
+    +health: int
+    +stamina: int
+    +hunger: int
+    +thirst: int
+}
+
+
+class StatesManager {
+    +body_history: list[BodyState]
+    +mind_last: MindState
+}
+
+
+
+class PersistenceManager {
+    +{static}default_config_path: str | Path
+    +{static}read_file() -> StatesManager
+    +{static}write_file()
+}
+PersistenceManager --> StatesManager
+StatesManager::body_history o-- BodyState
+StatesManager::mind_last o-- MindState
+
+
+@enduml
