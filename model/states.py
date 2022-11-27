@@ -3,6 +3,14 @@ __all__ = [
 ]
 
 
+class BodyState:
+    pass
+
+
+class MindState:
+    pass
+
+
 class StatesManager:
     pass
 
