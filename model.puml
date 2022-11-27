@@ -4,6 +4,9 @@
     legend {
         FontName Fira Mono
     }
+    note {
+        FontName Fira Mono
+    }
 </style>
 
 
@@ -12,7 +15,22 @@ legend top left
 end legend
 
 
-abstract class Creature {
+hide enum empty members
+
+enum Kind {
+    CAT
+    DOG
+    FOX
+    BEAR
+    SNAKE
+    LIZARD
+    TURTLE
+    ...
+}
+
+
+class Creature {
+    +kind: Kind
     +name: str
     +birthdate: dt
     +body: Body
@@ -20,11 +38,26 @@ abstract class Creature {
     ..properties..
     +age
     __
+    +feed()
+    +play()
+    +talk()
 }
-Creature <|-- Cat
-Creature <|-- Dog
-Creature <|-- Fox
-Creature <|-- Bear
+Creature <|-- CreatureActions
+Creature::kind o-- Kind
+
+
+class CreatureActions {
+    +{static}kind_actions: KindActions
+    +get_fried()
+    +seek_for_honey()
+    +be_a_cat()
+    +be_a_naughty_cat()
+    {method}...
+}
+note as annotation
+    KindActions = dict[Kind, tuple[method]]
+end note
+CreatureActions::kind_actions .. annotation
 
 
 class StatesCalculator {
@@ -38,14 +71,18 @@ StatesCalculator --> Creature
 
 
 class Body {
+    -health_ranges: ParamRanges
     +health: int
     +stamina: int
     +hunger: int
     +thirst: int
-    +tired()
-    +sleep()
+    +tick_changes() -> dict
 }
 Body --o Creature::body
+note as annotation2
+    ParamRanges = tuple[tuple[int, int], ...]
+end note
+annotation2 .. Body::health_ranges
 
 
 class Mind {
@@ -77,6 +114,8 @@ class MindState {
 
 
 class StatesManager {
+    +name: str
+    +birthdate: dt
     +body_history: list[BodyState]
     +mind_last: MindState
 }
