@@ -1,0 +1,81 @@
+{
+  "name": "Тортилла",
+  "birthdate": "2022-11-20 10:00:00",
+  "mind_state": {
+    "timestamp": "2022-11-26 17:30:00",
+    "joy": 20,
+    "anger": 10
+  },
+  "body_states": [
+    {
+      "timestamp": "2022-11-26 17:30:00",
+      "health": 50,
+      "stamina": 90,
+      "hunger": 5,
+      "thirst": 0
+    },
+    {
+      "timestamp": "2022-11-26 07:08:56",
+      "health": 36,
+      "stamina": 96,
+      "hunger": 8,
+      "thirst": 2
+    },
+    {
+      "timestamp": "2022-11-25 22:02:46",
+      "health": 39,
+      "stamina": 71,
+      "hunger": 22,
+      "thirst": 3
+    },
+    {
+      "timestamp": "2022-11-24 06:19:20",
+      "health": 39,
+      "stamina": 99,
+      "hunger": 29,
+      "thirst": 17
+    },
+    {
+      "timestamp": "2022-11-23 02:42:41",
+      "health": 49,
+      "stamina": 38,
+      "hunger": 23,
+      "thirst": 10
+    },
+    {
+      "timestamp": "2022-11-22 18:13:54",
+      "health": 48,
+      "stamina": 28,
+      "hunger": 2,
+      "thirst": 10
+    },
+    {
+      "timestamp": "2022-11-22 15:07:51",
+      "health": 38,
+      "stamina": 93,
+      "hunger": 17,
+      "thirst": 17
+    },
+    {
+      "timestamp": "2022-11-21 14:39:04",
+      "health": 45,
+      "stamina": 10,
+      "hunger": 30,
+      "thirst": 18
+    },
+    {
+      "timestamp": "2022-11-21 09:24:15",
+      "health": 36,
+      "stamina": 12,
+      "hunger": 39,
+      "thirst": 3
+    },
+    {
+      "timestamp": "2022-11-20 23:20:47",
+      "health": 42,
+      "stamina": 89,
+      "hunger": 30,
+      "thirst": 19
+    }
+  ]
+}

@@ -1,20 +1,44 @@
+from .creature import Body, Mind, Creature
+
 __all__ = [
-    'StatesCalculator'
+    'StatesManager',
 ]
 
 
 class BodyState:
-    pass
+    """
+
+    """
+    def to_dict(self) -> dict:
+        return {}
 
 
 class MindState:
-    pass
+    """
+
+    """
+    def to_dict(self) -> dict:
+        return {}
 
 
 class StatesManager:
-    pass
+    """
+
+    """
+    def to_dict(self) -> dict:
+        return {}
 
 
 class StatesCalculator:
-    pass
+    """
+
+    """
+    def _new_body(self) -> Body:
+        """"""
+
+    def _new_mind(self) -> Mind:
+        """"""
+
+    def new_creature(self) -> Creature:
+        """"""
 

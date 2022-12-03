@@ -102,6 +102,7 @@ class BodyState {
     +stamina: int
     +hunger: int
     +thirst: int
+    +to_dict()
 }
 
 
@@ -110,6 +111,7 @@ class MindState {
     +joy: int
     +anger: int
     +pattern
+    +to_dict()
 }
 
 
@@ -118,6 +120,7 @@ class StatesManager {
     +birthdate: dt
     +body_history: list[BodyState]
     +mind_last: MindState
+    +to_dict()
 }
 
 
