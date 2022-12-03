@@ -2,6 +2,7 @@ from .creature import Body, Mind, Creature
 
 __all__ = [
     'StatesManager',
+    'StatesCalculator',
 ]
 
 

@@ -12,6 +12,8 @@
 
 legend top left
     from datetime import datetime as dt
+
+    ParamRanges = tuple[tuple[int, int], ...]
 end legend
 
 
@@ -30,7 +32,7 @@ enum Kind {
 
 
 class Creature {
-    +kind: Kind
+    +kind: KindParameters
     +name: str
     +birthdate: dt
     +body: Body
@@ -38,12 +40,13 @@ class Creature {
     ..properties..
     +age
     __
+    +apply_tick_changes()
     +feed()
     +play()
     +talk()
 }
 Creature <|-- CreatureActions
-Creature::kind o-- Kind
+Creature::kind o-- KindParameters
 
 
 class CreatureActions {
@@ -61,28 +64,24 @@ CreatureActions::kind_actions .. annotation
 
 
 class StatesCalculator {
-    +previous: StatesManager
-    -new_body() -> Body
-    -new_mind() -> Mind
-    +new_creature() -> Creature
+    +last: StatesManager
+    -revive_body() -> Body
+    -revive_mind() -> Mind
+    +revive_creature() -> Creature
 }
-StatesCalculator::previous o-- StatesManager
+StatesCalculator::last o-- StatesManager
 StatesCalculator --> Creature
+StatesCalculator <.. KindParameters
 
 
 class Body {
-    -health_ranges: ParamRanges
     +health: int
     +stamina: int
     +hunger: int
     +thirst: int
-    +tick_changes() -> dict
+    +tick_changes(\n\tparameters: dict\n\t\t\t) -> dict
 }
 Body --o Creature::body
-note as annotation2
-    ParamRanges = tuple[tuple[int, int], ...]
-end note
-annotation2 .. Body::health_ranges
 
 
 class Mind {
@@ -92,6 +91,7 @@ class Mind {
     ..properties..
     +pattern
     __
+    +tick_changes(\n\tparameters: dict\n\t\t\t) -> dict
 }
 Mind --o Creature::mind
 
@@ -116,22 +116,40 @@ class MindState {
 
 
 class StatesManager {
+    +kind: Kind
     +name: str
     +birthdate: dt
     +body_history: list[BodyState]
     +mind_last: MindState
     +to_dict()
 }
+StatesManager::kind o-- Kind
+StatesManager::mind_last o-- MindState
+StatesManager::body_history o-- BodyState
+
+
+class KindParameters {
+    +title: str
+    +maturity: tuple
+    +egg
+    +cub
+    +young
+    +adult
+    +elder
+    +age_ranges()
+}
+
 
 
 class PersistenceManager {
-    +{static}default_config_path: str | Path
-    +{static}read_file() -> StatesManager
-    +{static}write_file()
+    +{static}default_ranges_path: str | Path
+    +{static}default_states_path: str | Path
+    +{static}read_ranges() -> KindParameters
+    +{static}read_states() -> StatesManager
+    +{static}write_states()
 }
 PersistenceManager --> StatesManager
-StatesManager::body_history o-- BodyState
-StatesManager::mind_last o-- MindState
+PersistenceManager --> KindParameters
 
 
 @enduml

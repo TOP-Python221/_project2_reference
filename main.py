@@ -1,8 +1,9 @@
 from model import *
 
-# перечислены в переменной __all__ пакета model
-StatesCalculator()
-PersistenceManager()
 
-# не перечислен в переменной __all__ пакета model — вызовет исключение
-StatesManager()
+# точка входа
+if __name__ == '__main__':
+    sm = PersistenceManager.read_states()
+    kr = PersistenceManager.read_ranges(sm.kind)
+    StatesCalculator(kr, sm)
+
