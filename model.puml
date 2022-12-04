@@ -13,7 +13,7 @@
 legend top left
     from datetime import datetime as dt
 
-    ParamRanges = tuple[tuple[int, int], ...]
+    ParamRanges = Sequence[Annotated[Sequence[int], 2]]
 end legend
 
 
@@ -58,7 +58,7 @@ class CreatureActions {
     {method}...
 }
 note as annotation
-    KindActions = dict[Kind, tuple[method]]
+    KindActions = dict[Kind, Sequence[Callable]]
 end note
 CreatureActions::kind_actions .. annotation
 
@@ -131,14 +131,23 @@ StatesManager::body_history o-- BodyState
 class KindParameters {
     +title: str
     +maturity: tuple
-    +egg
-    +cub
-    +young
-    +adult
-    +elder
-    +age_ranges()
+    +egg: Ranges
+    +cub: Ranges
+    +young: Ranges
+    +adult: Ranges
+    +elder: Ranges
+    +age_ranges() -> Ranges
 }
+KindParameters *-- "сильная" Ranges
 
+
+hide Ranges empty methods
+class Ranges {
+    +health: ParamRanges,
+    +stamina: ParamRanges,
+    +hunger: ParamRanges,
+    +thirst: ParamRanges
+}
 
 
 class PersistenceManager {
