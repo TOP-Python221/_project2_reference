@@ -44,6 +44,7 @@ class Creature {
     +feed()
     +play()
     +talk()
+    +clean()
 }
 Creature <|-- CreatureActions
 Creature::kind o-- KindParameters
@@ -68,6 +69,7 @@ class StatesCalculator {
     -revive_body() -> Body
     -revive_mind() -> Mind
     +revive_creature() -> Creature
+    {method}<i>?? новорождённое существо ??</i>
 }
 StatesCalculator::last o-- StatesManager
 StatesCalculator --> Creature
@@ -79,6 +81,7 @@ class Body {
     +stamina: int
     +hunger: int
     +thirst: int
+    +intestine: int
     +tick_changes(\n\tparameters: dict\n\t\t\t) -> dict
 }
 Body --o Creature::body
@@ -87,7 +90,9 @@ Body --o Creature::body
 class Mind {
     #{static}patterns: dict
     +joy: int
+    +activity: float
     +anger: int
+    +anxiety: float
     ..properties..
     +pattern
     __
@@ -119,9 +124,10 @@ class StatesManager {
     +kind: Kind
     +name: str
     +birthdate: dt
-    +body_history: list[BodyState]
+    +body_last: BodyState
     +mind_last: MindState
     +to_dict()
+    {method}<i>?? новорождённое существо ??</i>
 }
 StatesManager::kind o-- Kind
 StatesManager::mind_last o-- MindState
@@ -136,6 +142,8 @@ class KindParameters {
     +young: Ranges
     +adult: Ranges
     +elder: Ranges
+    <i>!!! включить влияния</i>
+    <i>и коэффициенты !!!</i>
     +age_ranges() -> Ranges
 }
 KindParameters *-- "сильная" Ranges
