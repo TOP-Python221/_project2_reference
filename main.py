@@ -1,5 +1,10 @@
+# pip install schedule
+# импорт сторонних пакетов
+from schedule import every, run_pending, idle_seconds
+
 # импорт из стандартной библиотеки
 from pprint import pprint
+from time import sleep
 
 # импорт дополнительных пакетов и модулей
 from model import *
@@ -33,7 +38,12 @@ class Controller:
 
     def mainloop(self):
         """"""
-
+        every(5).seconds.do(self.pet.apply_tick_changes)
+        while True:
+            run_pending()
+            print(f'До следующего обновления параметров {idle_seconds():.2} секунд')
+            input(' > ')
+            sleep(0.1)
 
 
 # точка входа
@@ -41,8 +51,5 @@ if __name__ == '__main__':
     c = Controller()
     print(f'\n{c.pet}')
     pprint(c.pet.state)
-    print()
-    pprint(c.pet._tick_changes())
-    print()
-    c.pet.apply_tick_changes()
-    print()
+
+    c.mainloop()
