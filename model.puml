@@ -13,12 +13,19 @@
 legend top left
     from datetime import datetime as dt
 
-    ParamRanges = Sequence[Annotated[Sequence[int], 2]]
+    pathlike = str | Path
+    ParamRange = tuple[float, float]
+    KindActions = dict[Kind, Sequence[Callable]]
 end legend
 
 
 hide enum empty members
-
+enum Matureness {
+    CUB
+    YOUNG
+    ADULT
+    ELDER
+}
 enum Kind {
     CAT
     DOG
@@ -31,23 +38,51 @@ enum Kind {
 }
 
 
-class Creature {
-    +kind: KindParameters
-    +name: str
-    +birthdate: dt
-    +body: Body
-    +mind: Mind
-    ..properties..
-    +age
-    __
-    +apply_tick_changes()
-    +feed()
-    +play()
-    +talk()
-    +clean()
+hide abstract empty members
+abstract class dict
+
+
+together {
+    class KindParameters {
+        +title: str
+        +maturation: tuple
+        +cub: Ranges
+        +young: Ranges
+        +adult: Ranges
+        +elder: Ranges
+        __init__()
+        +age_ranges() -> Ranges
+    }
+    class Creature {
+        +kind: KindParameters
+        +name: str
+        +birthdate: dt
+        +body: Body
+        +mind: Mind
+        ..properties..
+        +age: int
+        +state: State
+        __
+        -tick_changes() -> dict
+        +apply_tick_changes()
+        +feed()
+        +play()
+        +talk()
+        +clean()
+    }
 }
+'Matureness .down.> KindParameters
+KindParameters <.down. Matureness
+KindParameters *-- "сильная" Ranges
 Creature <|-- CreatureActions
-Creature::kind o-- KindParameters
+Creature::kind o-left- KindParameters
+CreatureFactory o-- KindParameters
+'(KindParameters, Ranges) . Matureness
+'Matureness . (KindParameters, Ranges)
+'KindParameters -right-o Creature::kind
+'hide dummy
+'KindParameters -down- dummy
+'dummy - Matureness
 
 
 class CreatureActions {
@@ -58,22 +93,24 @@ class CreatureActions {
     +be_a_naughty_cat()
     {method}...
 }
-note as annotation
-    KindActions = dict[Kind, Sequence[Callable]]
-end note
-CreatureActions::kind_actions .. annotation
 
 
-class StatesCalculator {
-    +last: StatesManager
-    -revive_body() -> Body
-    -revive_mind() -> Mind
-    +revive_creature() -> Creature
-    {method}<i>?? новорождённое существо ??</i>
-}
-StatesCalculator::last o-- StatesManager
-StatesCalculator --> Creature
-StatesCalculator <.. KindParameters
+'note as annotation
+'    KindActions = dict[Kind, Sequence[Callable]]
+'end note
+'CreatureActions::kind_actions .. annotation
+
+
+'class StatesCalculator {
+'    +last: CreatureFactory
+'    -revive_body() -> Body
+'    -revive_mind() -> Mind
+'    +revive_creature() -> Creature
+'    {method}<i>?? новорождённое существо ??</i>
+'}
+'StatesCalculator::last o-- CreatureFactory
+'StatesCalculator --> Creature
+'StatesCalculator <.. KindParameters
 
 
 class Body {
@@ -82,13 +119,12 @@ class Body {
     +hunger: int
     +thirst: int
     +intestine: int
-    +tick_changes(\n\tparameters: dict\n\t\t\t) -> dict
 }
 Body --o Creature::body
 
 
 class Mind {
-    #{static}patterns: dict
+    #{static}patterns: DictOfRanges
     +joy: int
     +activity: float
     +anger: int
@@ -96,77 +132,92 @@ class Mind {
     ..properties..
     +pattern
     __
-    +tick_changes(\n\tparameters: dict\n\t\t\t) -> dict
+'    +tick_changes(\n\tparameters: dict\n\t\t\t) -> dict
 }
 Mind --o Creature::mind
+Mind o-- DictOfRanges
+'DictOfRanges --o Mind::patterns
 
 
-class BodyState {
+class State {
     +timestamp: dt
     +health: int
     +stamina: int
     +hunger: int
     +thirst: int
-    +to_dict()
-}
-
-
-class MindState {
-    +timestamp: dt
     +joy: int
+    +activity: float
     +anger: int
-    +pattern
+    +anxiety: float
+'    +pattern
     +to_dict()
 }
+'Creature::state --> State
+State <-- Creature
 
 
-class StatesManager {
-    +kind: Kind
-    +name: str
-    +birthdate: dt
-    +body_last: BodyState
-    +mind_last: MindState
-    +to_dict()
-    {method}<i>?? новорождённое существо ??</i>
+hide DictOfRanges empty fields
+dict <|-- DictOfRanges
+class DictOfRanges {
+    __getitem__()
 }
-StatesManager::kind o-- Kind
-StatesManager::mind_last o-- MindState
-StatesManager::body_history o-- BodyState
-
-
-class KindParameters {
-    +title: str
-    +maturity: tuple
-    +egg: Ranges
-    +cub: Ranges
-    +young: Ranges
-    +adult: Ranges
-    +elder: Ranges
-    <i>!!! включить влияния</i>
-    <i>и коэффициенты !!!</i>
-    +age_ranges() -> Ranges
-}
-KindParameters *-- "сильная" Ranges
 
 
 hide Ranges empty methods
 class Ranges {
-    +health: ParamRanges,
-    +stamina: ParamRanges,
-    +hunger: ParamRanges,
-    +thirst: ParamRanges
+    +health: DictOfRanges
+    +stamina: DictOfRanges
+    +hunger: DictOfRanges
+    +thirst: DictOfRanges
+    +intestine: DictOfRanges
+    +{field}joy: ParamRange = (0, 100)
+    +joy_coeff: float
+    +activity: ParamRange
+    +{field}anger: ParamRange = (0, 100)
+    +anger_coeff: float
+    +anxiety: ParamRange
+    __iter__()
 }
+Ranges o-- DictOfRanges
+
+
+class CreatureFactory {
+    #parameters: KindParameters
+    +name: str
+    +birthdate: dt
+    +last_state: State
+    ..properties..
+    +kind <-> Kind
+    +creature_data <-> dict
+    __
+    __init__()
+'    __bool__()
+    -new_body() -> Body
+    -new_mind() -> Mind
+    +new_creature() -> Creature
+    -revive_body() -> Body
+    -revive_mind() -> Mind
+    +revive_creature() -> Creature
+}
+Kind -left-o CreatureFactory
+CreatureFactory o-- State
+CreatureFactory --> Creature
 
 
 class PersistenceManager {
-    +{static}default_ranges_path: str | Path
-    +{static}default_states_path: str | Path
+    +{static}default_ranges_path: pathlike
+    +{static}default_states_path: pathlike
     +{static}read_ranges() -> KindParameters
-    +{static}read_states() -> StatesManager
+    +{static}read_states() -> dict
     +{static}write_states()
 }
-PersistenceManager --> StatesManager
 PersistenceManager --> KindParameters
+
+'PersistenceManager -right-> CreatureFactory
+'(PersistenceManager, CreatureFactory) .. State
+
+PersistenceManager <-right-> CreatureFactory
+(PersistenceManager, CreatureFactory) .. KindParameters
 
 
 @enduml

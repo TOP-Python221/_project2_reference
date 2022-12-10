@@ -1,9 +1,9 @@
-from .pm import *
-from .states import *
-from .creature import *
+from model.creature import *
+from model.data import *
+from model.files_io import *
 
-__all__ = [
-    pm.__all__ +
-    states.__all__ +
-    creature.__all__
-]
+__all__ = (
+    creature.__all__ +
+    data.__all__ +
+    files_io.__all__
+)

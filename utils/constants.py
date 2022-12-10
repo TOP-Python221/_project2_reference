@@ -1,5 +1,10 @@
+__all__ = [
+    'Kind'
+]
+
 from enum import Enum
 from pathlib import Path
+from sys import path
 from collections.abc import Sequence, Callable
 from typing import Annotated, TypedDict
 
@@ -16,28 +21,31 @@ class Kind(Enum):
 
 
 class Matureness(str, Enum):
-    EGG = 'egg'
     CUB = 'cub'
     YOUNG = 'young'
     ADULT = 'adult'
     ELDER = 'elder'
 
-    @classmethod
-    def mammals(cls):
-        res = list(cls)
-        res.remove(cls.EGG)
-        return res
+
+BASE_DIR = Path(path[0])
 
 
 pathlike = str | Path
 
 KindActions = dict[Kind, Sequence[Callable]]
-ParamRanges = Sequence[Annotated[Sequence[int], 2]]
+ParamRange = Annotated[Sequence[float], 2]
+ParamRanges = Sequence[ParamRange]
+ParamRangesInfluences = dict[str, dict[str, float]]
 RangesDict = TypedDict('RangesDict', {
-    'health': ParamRanges,
-    'stamina': ParamRanges,
-    'hunger': ParamRanges,
-    'thirst': ParamRanges
+    'health': ParamRangesInfluences,
+    'stamina': ParamRangesInfluences,
+    'hunger': ParamRangesInfluences,
+    'thirst': ParamRangesInfluences,
+    'intestine': ParamRangesInfluences,
+    'activity': ParamRanges,
+    'anxiety': ParamRanges,
+    'anger_coeff': float,
+    'joy_coeff': float,
 })
 MatureDays = Annotated[Sequence[int], 3] | Annotated[Sequence[int], 4]
 
