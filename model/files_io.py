@@ -3,7 +3,6 @@ __all__ = [
 ]
 
 # импорт из стандартной библиотеки
-from datetime import datetime as dt
 from fractions import Fraction as frac
 from json import load as jload, dump as jdump, JSONDecodeError
 from pprint import pprint
@@ -35,8 +34,11 @@ class PersistenceManager:
                 if not infls:
                     continue
                 if isinstance(infls, str):
-                    if ',' in infls:
-                        data['ranges'][matureness][param] = tuple(float(n) for n in infls.split(','))
+                    if match := uc.separated_floats_pattern.fullmatch(infls):
+                        data['ranges'][matureness][param] = tuple(
+                            float(n)
+                            for n in infls.split(match.group('sep'))
+                        )
                     else:
                         data['ranges'][matureness][param] = float(infls)
                 elif isinstance(infls, dict):
@@ -65,14 +67,9 @@ class PersistenceManager:
                 data = jload(filein)
         except JSONDecodeError:
             data = {}
-        # except FileNotFoundError:
-        #     pass
-
+        except FileNotFoundError:
+            data = {}
         return data
-        # factory = mc.CreatureFactory()
-        # if data:
-        #     factory.creature_data = data
-        # return factory
 
     @classmethod
     def write_states(cls, data: dict, states_path: uc.pathlike = None):
@@ -85,10 +82,8 @@ class PersistenceManager:
 
 
 if __name__ == '__main__':
-    cf = PersistenceManager.read_states()
-    print(cf)
-    pprint(cf.__dict__)
-    print(bool(cf.last_state))
+    d = PersistenceManager.read_states()
+    pprint(d)
 
     # kr = PersistenceManager.read_parameters(uc.Kind.CAT)
     # pprint(kr.__dict__)

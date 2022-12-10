@@ -2,13 +2,16 @@ __all__ = [
     'DictOfRanges'
 ]
 
+# импорт из стандартной библиотеки
+from numbers import Real
+
 
 class DictOfRanges(dict):
     """
 
     """
     def __getitem__(self, item):
-        if isinstance(item, int):
+        if isinstance(item, Real):
             for left, right in self:
                 if left <= item <= right or right <= item <= left:
                     return super().__getitem__((left, right))

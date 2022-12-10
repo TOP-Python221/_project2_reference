@@ -2,10 +2,12 @@ __all__ = [
     'Kind'
 ]
 
+# импорт из стандартной библиотеки
+from collections.abc import Sequence, Callable
 from enum import Enum
 from pathlib import Path
+from re import compile as reg_pattern_compile
 from sys import path
-from collections.abc import Sequence, Callable
 from typing import Annotated, TypedDict
 
 
@@ -28,6 +30,10 @@ class Matureness(str, Enum):
 
 
 BASE_DIR = Path(path[0])
+
+separated_floats_pattern = reg_pattern_compile(
+    r'^((?P<float>\d+\.\d+)(?P<sep>[,; ])?){2,}$'
+)
 
 
 pathlike = str | Path

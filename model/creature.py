@@ -1,6 +1,4 @@
 __all__ = [
-    'Body',
-    'Mind',
     'Creature',
     'CreatureFactory'
 ]
@@ -10,6 +8,7 @@ from abc import ABC
 from dataclasses import dataclass
 from datetime import datetime as dt
 from math import floor
+from pprint import pprint
 
 # импорт дополнительных модулей текущего пакета
 import model.data as md
@@ -88,29 +87,49 @@ class Creature(ABC):
         ranges = self.__kind.age_ranges(self.age)
         for param, value in self.body.__dict__.items():
             result += getattr(ranges, param)[value]
-        result['joy'] -= ranges.anger_coeff * result['anger']
-        result['anger'] -= ranges.joy_coeff * result['joy']
+        # сильно тестировать необходимость применения данных формул — вместо взаимного сглаживания наблюдается взаимный разгон эмоциональных показателей
+        # result['joy'] -= ranges.anger_coeff * result['anger']
+        # result['anger'] -= ranges.joy_coeff * result['joy']
         return result
 
     def apply_tick_changes(self):
         """"""
         ranges = self.__kind.age_ranges(self.age)
-        for attr, delta in self._tick_changes().items():
-            if attr in dir(self.body):
-                new_value = getattr(self.body, attr) + delta
-                range_min = uf.uni_min(getattr(ranges, attr))
-                if new_value < range_min:
-                    new_value = range_min
-                range_max = uf.uni_max(getattr(ranges, attr))
-                if new_value > range_max:
-                    new_value = range_max
-                setattr(self.body, attr, new_value)
+        deltas = self._tick_changes()
+        for attr in ('activity', 'anxiety'):
+            new_value = getattr(self.mind, attr) + deltas.pop(attr)
+            if new_value < (range_min := uf.uni_min(getattr(ranges, attr))):
+                new_value = range_min
+            elif new_value > (range_max := uf.uni_max(getattr(ranges, attr))):
+                new_value = range_max
+            setattr(self.mind, attr, new_value)
 
+        for attr, coeff in (('joy', 'activity'), ('anger', 'anxiety')):
+            new_value = getattr(self.mind, attr) + getattr(self.mind, coeff) * deltas.pop(attr)
+            if new_value < (range_min := uf.uni_min(getattr(ranges, attr))):
+                new_value = range_min
+            elif new_value > (range_max := uf.uni_max(getattr(ranges, attr))):
+                new_value = range_max
+            setattr(self.mind, attr, new_value)
+
+        for attr, delta in deltas.items():
+            # if attr in dir(self.body):
+            new_value = getattr(self.body, attr) + delta
+            range_min = uf.uni_min(getattr(ranges, attr))
+            if new_value < range_min:
+                new_value = range_min
+            range_max = uf.uni_max(getattr(ranges, attr))
+            if new_value > range_max:
+                new_value = range_max
+            setattr(self.body, attr, new_value)
+
+        pprint(self.state)
 
     def __str__(self):
+        age = self.age
+        noun = uf.countable_nouns(age, ('день', 'дня', 'дней'))
         return (
-            self.name +
-            str(self.age)
+            f"{self.name}: {age} {noun}"
         )
 
 

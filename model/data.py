@@ -36,12 +36,12 @@ class KindParameters:
 
     def __init__(self,
                  kind_title: str,
-                 maturation_days: uc.MatureDays,
+                 maturation_days: list[int],
                  **mature_ranges: uc.RangesDict):
         self.title = kind_title
         self.maturation = tuple(
             range(i, j)
-            for i, j in pairwise((0,) + tuple(maturation_days))
+            for i, j in pairwise([0] + maturation_days)
         )
         # подсказка IDE о наличии атрибутов
         # noinspection PyTypeChecker
@@ -54,7 +54,7 @@ class KindParameters:
         self.elder: KindParameters.Ranges = None
 
         for attr in list(uc.Matureness):
-            setattr(self, attr, self.__class__.Ranges(
+            setattr(self, attr, KindParameters.Ranges(
                 ut.DictOfRanges(mature_ranges[attr]['health']),
                 ut.DictOfRanges(mature_ranges[attr]['stamina']),
                 ut.DictOfRanges(mature_ranges[attr]['hunger']),

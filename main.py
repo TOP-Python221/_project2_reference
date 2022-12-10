@@ -39,13 +39,10 @@ class Controller:
 # точка входа
 if __name__ == '__main__':
     c = Controller()
+    print(f'\n{c.pet}')
+    pprint(c.pet.state)
     print()
-    pprint(c.pet.__dict__)
+    pprint(c.pet._tick_changes())
     print()
-    pprint(c.pet.mind.__dict__)
-    print()
-    # pprint(c.pet._tick_changes())
-    # print()
     c.pet.apply_tick_changes()
-    # pprint(c.pet.__dict__)
-    # print()
+    print()

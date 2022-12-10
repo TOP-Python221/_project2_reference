@@ -2,6 +2,9 @@ __all__ = [
     'countable_nouns',
 ]
 
+# импорт из стандартной библиотеки
+from numbers import Real
+
 # импорт дополнительных модулей текущего пакета
 import utils.types as ut
 
@@ -22,12 +25,17 @@ def countable_nouns(number: int, nouns: tuple[str, str, str]) -> str:
 def uni_min(obj):
     if isinstance(obj, ut.DictOfRanges):
         return obj.min
+    elif isinstance(obj, Real):
+        return min(obj, float('inf'))
     else:
         return min(obj)
+
 
 def uni_max(obj):
     if isinstance(obj, ut.DictOfRanges):
         return obj.max
+    elif isinstance(obj, Real):
+        return max(obj, float('-inf'))
     else:
         return max(obj)
 
