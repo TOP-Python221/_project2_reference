@@ -1,10 +1,10 @@
 # pip install schedule
 # импорт сторонних пакетов
-from schedule import every, run_pending, idle_seconds
+from schedule import every
 
 # импорт из стандартной библиотеки
 from pprint import pprint
-from time import sleep
+from threading import Event
 
 # импорт дополнительных пакетов и модулей
 from model import *
@@ -36,14 +36,20 @@ class Controller:
         name = 'Марсик'
         return name
 
-    def mainloop(self):
+    def mainloop(self, tick_interval: int = 900, thread_interval: float = 90):
         """"""
-        every(4).seconds.do(self.pet.apply_tick_changes)
+        every(tick_interval).seconds.do(self.pet.apply_tick_changes)
+        stop_background = Event()
+        self.pet.continuous_run(stop_background, thread_interval)
+
+        # цикл обработки команд
         while True:
-            run_pending()
-            print(f'До следующего обновления параметров {idle_seconds():.2} секунд')
-            input(' > ')
-            sleep(0.1)
+            command = input(' > ').lower()
+
+            if command == 'quit':
+                break
+
+        stop_background.set()
 
 
 # точка входа
@@ -52,4 +58,6 @@ if __name__ == '__main__':
     print(f'\n{c.pet}')
     pprint(c.pet.state.dict)
 
-    c.mainloop()
+    c.mainloop(3, 1)
+
+    pprint(c.pet.state.dict)

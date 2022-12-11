@@ -3,12 +3,18 @@ __all__ = [
     'CreatureFactory'
 ]
 
+# pip install schedule
+# импорт сторонних пакетов
+from schedule import run_pending, idle_seconds
+
 # импорт из стандартной библиотеки
 from dataclasses import dataclass
 from datetime import datetime as dt
 from math import floor
 from pprint import pprint
 from random import choice
+from threading import Thread, Event
+from time import sleep
 
 # импорт дополнительных модулей текущего пакета
 import model.data as md
@@ -90,7 +96,9 @@ class Creature:
         # result['joy'] -= ranges.anger_coeff * result['anger']
         # result['anger'] -= ranges.joy_coeff * result['joy']
         if uc.DEBUG:
+            print('\n...debug...')
             pprint(result)
+            print('...........\n')
         return result
 
     def __within_range(self, attr: str, value: float):
@@ -128,7 +136,26 @@ class Creature:
             setattr(self.body, attr, new_value)
 
         if uc.DEBUG:
+            print('\n...debug...')
             pprint(self.state.dict)
+            print('...........\n')
+
+    @staticmethod
+    def continuous_run(event_obj: Event, interval: float = 1) -> Thread:
+        """"""
+
+        class BackgroundCycleThread(Thread):
+            @classmethod
+            def run(cls) -> None:
+                while not event_obj.is_set():
+                    run_pending()
+                    if uc.DEBUG:
+                        print(f'\n...до следующего обновления параметров {idle_seconds():.2} секунд...\n')
+                    sleep(interval)
+
+        thread_obj = BackgroundCycleThread()
+        thread_obj.start()
+        return thread_obj
 
     def __str__(self):
         age = self.age
