@@ -40,7 +40,7 @@ class Controller:
         """"""
         every(tick_interval).seconds.do(self.pet.apply_tick_changes)
         stop_background = Event()
-        self.pet.continuous_run(stop_background, thread_interval)
+        self.pet.continuous_tick(stop_background, thread_interval)
 
         # цикл обработки команд
         while True:
@@ -48,6 +48,9 @@ class Controller:
 
             if command == 'quit':
                 break
+
+            elif command == 'watch':
+                self.pet.action()
 
         stop_background.set()
 
@@ -58,6 +61,6 @@ if __name__ == '__main__':
     print(f'\n{c.pet}')
     pprint(c.pet.state.dict)
 
-    c.mainloop(3, 1)
+    c.mainloop(5, 1)
 
     pprint(c.pet.state.dict)

@@ -40,8 +40,8 @@ separated_floats_pattern = reg_pattern_compile(
 
 
 pathlike = str | Path
-
-KindActions = dict[Kind, Sequence[Callable]]
+Actions = Sequence[Callable]
+KindActions = dict[Kind, Actions]
 ParamRange = Annotated[Sequence[float], 2]
 ParamRanges = Sequence[ParamRange]
 ParamRangesInfluences = dict[str, dict[str, float]]

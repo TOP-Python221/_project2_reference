@@ -67,12 +67,14 @@ class Creature:
                  name: str,
                  birthdate: dt,
                  body: Body,
-                 mind: Mind):
+                 mind: Mind,
+                 actions: uc.Actions):
         self.__kind = kind_parameters
         self.name = name
         self.birthdate = birthdate
         self.body = body
         self.mind = mind
+        self._actions = actions
 
     @property
     def age(self) -> int:
@@ -101,7 +103,7 @@ class Creature:
             print('...........\n')
         return result
 
-    def __within_range(self, attr: str, value: float):
+    def _within_range(self, attr: str, value: float):
         """"""
         attr_range = self.__kind.age_ranges(self.age)
         param = getattr(attr_range, attr)
@@ -115,21 +117,21 @@ class Creature:
         """"""
         deltas = self._tick_changes()
         for attr in ('activity', 'anxiety'):
-            new_value = self.__within_range(
+            new_value = self._within_range(
                 attr,
                 getattr(self.mind, attr) + deltas.pop(attr)
             )
             setattr(self.mind, attr, new_value)
 
         for attr, coeff in (('joy', 'activity'), ('anger', 'anxiety')):
-            new_value = self.__within_range(
+            new_value = self._within_range(
                 attr,
                 getattr(self.mind, attr) + getattr(self.mind, coeff) * deltas.pop(attr)
             )
             setattr(self.mind, attr, new_value)
 
         for attr, delta in deltas.items():
-            new_value = self.__within_range(
+            new_value = self._within_range(
                 attr,
                 getattr(self.body, attr) + delta
             )
@@ -141,7 +143,7 @@ class Creature:
             print('...........\n')
 
     @staticmethod
-    def continuous_run(event_obj: Event, interval: float = 1) -> Thread:
+    def continuous_tick(event_obj: Event, interval: float = 1) -> Thread:
         """"""
 
         class BackgroundCycleThread(Thread):
@@ -149,8 +151,8 @@ class Creature:
             def run(cls) -> None:
                 while not event_obj.is_set():
                     run_pending()
-                    if uc.DEBUG:
-                        print(f'\n...до следующего обновления параметров {idle_seconds():.2} секунд...\n')
+                    # if uc.DEBUG:
+                    #     print(f'\n...до следующего обновления параметров {idle_seconds():.2} секунд...\n')
                     sleep(interval)
 
         thread_obj = BackgroundCycleThread()
@@ -164,6 +166,23 @@ class Creature:
             f"{self.name}: {age} {noun}"
         )
 
+    def feed(self):
+        """"""
+
+    def clean(self):
+        """"""
+
+    def play(self):
+        """"""
+
+    def talk(self):
+        """"""
+
+    def action(self):
+        """"""
+        random_action = choice(self._actions)
+        random_action(self)
+
 
 class CreatureActions(Creature):
     """
@@ -171,7 +190,7 @@ class CreatureActions(Creature):
     """
     def run_at_night(self):
         """"""
-        self.mind.joy = self.__within_range('mind', self.mind.joy + 30)
+        self.mind.joy = self._within_range('joy', self.mind.joy + 30)
         print('Ночной тыгыдык!')
 
     def seek_for_honey(self):
@@ -181,7 +200,11 @@ class CreatureActions(Creature):
         """"""
 
     kind_actions = {
-        uc.Kind.CAT: (run_at_night, )
+        uc.Kind.CAT: (run_at_night, ),
+        uc.Kind.DOG: (),
+        uc.Kind.BEAR: (seek_for_honey, ),
+        uc.Kind.LIZARD: (get_warm_on_sun, ),
+        uc.Kind.SNAKE: (get_warm_on_sun, ),
     }
 
 
@@ -235,6 +258,7 @@ class CreatureFactory:
             self.birthdate,
             Body(**self.last_state.body),
             Mind(**self.last_state.mind),
+            CreatureActions.kind_actions[self.kind],
         )
         hours = (dt.now() - self.last_state.timestamp).seconds // 3600
         for _ in range(hours):
@@ -263,4 +287,5 @@ class CreatureFactory:
                 anger=floor(max(self.__parameters.cub.anger) / 4),
                 anxiety=max(self.__parameters.cub.anxiety),
             ),
+            CreatureActions.kind_actions[self.kind],
         )
