@@ -4,7 +4,6 @@ __all__ = [
 ]
 
 # импорт из стандартной библиотеки
-from abc import ABC
 from dataclasses import dataclass
 from datetime import datetime as dt
 from math import floor
@@ -56,7 +55,6 @@ class Creature:
     """
 
     """
-
     def __init__(self,
                  kind_parameters: md.KindParameters,
                  name: str,
@@ -74,7 +72,7 @@ class Creature:
         return (dt.now() - self.birthdate).days
 
     @property
-    def state(self):
+    def state(self) -> md.State:
         return md.State(
             timestamp=dt.now(),
             **self.body.__dict__,
@@ -90,33 +88,40 @@ class Creature:
         # TODO: сильно тестировать необходимость применения данных формул — вместо взаимного сглаживания наблюдается взаимный разгон эмоциональных показателей
         # result['joy'] -= ranges.anger_coeff * result['anger']
         # result['anger'] -= ranges.joy_coeff * result['joy']
+        if uc.DEBUG:
+            pprint(result)
         return result
 
-    def apply_tick_changes(self):
+    def __within_range(self, attr: str, value: float):
         """"""
         ranges = self.__kind.age_ranges(self.age)
+        return uf.within_range(
+            value,
+            uf.uni_min(getattr(ranges, attr)),
+            uf.uni_max(getattr(ranges, attr))
+        )
+
+    def apply_tick_changes(self) -> None:
+        """"""
         deltas = self._tick_changes()
         for attr in ('activity', 'anxiety'):
-            new_value = uf.within_range(
-                getattr(self.mind, attr) + deltas.pop(attr),
-                uf.uni_min(getattr(ranges, attr)),
-                uf.uni_max(getattr(ranges, attr))
+            new_value = self.__within_range(
+                attr,
+                getattr(self.mind, attr) + deltas.pop(attr)
             )
             setattr(self.mind, attr, new_value)
 
         for attr, coeff in (('joy', 'activity'), ('anger', 'anxiety')):
-            new_value = uf.within_range(
-                getattr(self.mind, attr) + getattr(self.mind, coeff) * deltas.pop(attr),
-                uf.uni_min(getattr(ranges, attr)),
-                uf.uni_max(getattr(ranges, attr))
+            new_value = self.__within_range(
+                attr,
+                getattr(self.mind, attr) + getattr(self.mind, coeff) * deltas.pop(attr)
             )
             setattr(self.mind, attr, new_value)
 
         for attr, delta in deltas.items():
-            new_value = uf.within_range(
-                getattr(self.body, attr) + delta,
-                uf.uni_min(getattr(ranges, attr)),
-                uf.uni_max(getattr(ranges, attr))
+            new_value = self.__within_range(
+                attr,
+                getattr(self.body, attr) + delta
             )
             setattr(self.body, attr, new_value)
 
@@ -135,15 +140,20 @@ class CreatureActions(Creature):
     """
 
     """
-
     def run_at_night(self):
         """"""
+        self.mind.joy = self.__within_range('mind', self.mind.joy + 30)
+        print('Ночной тыгыдык!')
 
     def seek_for_honey(self):
         """"""
 
     def get_warm_on_sun(self):
         """"""
+
+    kind_actions = {
+        uc.Kind.CAT: (run_at_night, )
+    }
 
 
 class CreatureFactory:
@@ -195,7 +205,7 @@ class CreatureFactory:
             self.name,
             self.birthdate,
             Body(**self.last_state.body),
-            Mind(**self.last_state.mind)
+            Mind(**self.last_state.mind),
         )
         hours = (dt.now() - self.last_state.timestamp).seconds // 3600
         for _ in range(hours):
@@ -220,5 +230,5 @@ class CreatureFactory:
                 activity=min(self.__parameters.cub.activity),
                 anger=floor(max(self.__parameters.cub.anger) / 4),
                 anxiety=max(self.__parameters.cub.anxiety),
-            )
+            ),
         )
