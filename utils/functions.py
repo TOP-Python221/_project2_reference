@@ -26,7 +26,7 @@ def uni_min(obj):
     if isinstance(obj, ut.DictOfRanges):
         return obj.min
     elif isinstance(obj, Real):
-        return min(obj, float('inf'))
+        return obj
     else:
         return min(obj)
 
@@ -35,7 +35,7 @@ def uni_max(obj):
     if isinstance(obj, ut.DictOfRanges):
         return obj.max
     elif isinstance(obj, Real):
-        return max(obj, float('-inf'))
+        return obj
     else:
         return max(obj)
 

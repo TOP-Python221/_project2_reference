@@ -38,7 +38,7 @@ class Controller:
 
     def mainloop(self):
         """"""
-        every(5).seconds.do(self.pet.apply_tick_changes)
+        every(4).seconds.do(self.pet.apply_tick_changes)
         while True:
             run_pending()
             print(f'До следующего обновления параметров {idle_seconds():.2} секунд')
@@ -50,6 +50,6 @@ class Controller:
 if __name__ == '__main__':
     c = Controller()
     print(f'\n{c.pet}')
-    pprint(c.pet.state)
+    pprint(c.pet.state.dict)
 
     c.mainloop()

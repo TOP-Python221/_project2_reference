@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from datetime import datetime as dt
 from math import floor
 from pprint import pprint
+from random import choice
 
 # импорт дополнительных модулей текущего пакета
 import model.data as md
@@ -94,11 +95,12 @@ class Creature:
 
     def __within_range(self, attr: str, value: float):
         """"""
-        ranges = self.__kind.age_ranges(self.age)
+        attr_range = self.__kind.age_ranges(self.age)
+        param = getattr(attr_range, attr)
         return uf.within_range(
             value,
-            uf.uni_min(getattr(ranges, attr)),
-            uf.uni_max(getattr(ranges, attr))
+            uf.uni_min(param),
+            uf.uni_max(param)
         )
 
     def apply_tick_changes(self) -> None:
@@ -126,7 +128,7 @@ class Creature:
             setattr(self.body, attr, new_value)
 
         if uc.DEBUG:
-            pprint(self.state)
+            pprint(self.state.dict)
 
     def __str__(self):
         age = self.age
@@ -209,6 +211,9 @@ class CreatureFactory:
         )
         hours = (dt.now() - self.last_state.timestamp).seconds // 3600
         for _ in range(hours):
+            if choice((True, False)):
+                # случайное действие
+                pass
             pet.apply_tick_changes()
         return pet
 

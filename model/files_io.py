@@ -65,9 +65,7 @@ class PersistenceManager:
         try:
             with open(states_path, encoding='utf-8') as filein:
                 data = jload(filein)
-        except JSONDecodeError:
-            data = {}
-        except FileNotFoundError:
+        except (JSONDecodeError, FileNotFoundError):
             data = {}
         return data
 

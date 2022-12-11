@@ -150,7 +150,10 @@ class State {
     +anger: int
     +anxiety: float
 '    +pattern
-    +to_dict()
+    ..properties..
+    +body -> dict
+    +mind -> dict
+    +dict -> dict
 }
 'Creature::state --> State
 State <-- Creature
