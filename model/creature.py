@@ -38,9 +38,9 @@ class Mind:
     patterns: ut.DictOfRanges
 
     def __init__(self,
-                 joy: int,
+                 joy: float,
                  activity: float,
-                 anger: int,
+                 anger: float,
                  anxiety: float):
         self.joy = joy
         self.activity = activity
@@ -52,7 +52,7 @@ class Mind:
         return
 
 
-class Creature(ABC):
+class Creature:
     """
 
     """
@@ -182,43 +182,25 @@ class CreatureFactory:
         self.kind = uc.Kind(loaded['kind'])
         self.name = loaded['name']
         self.birthdate = dt.strptime(loaded['birthdate'], '%Y-%m-%d %H:%M:%S')
-        loaded['last_state']['timestamp'] = dt.strptime(loaded['last_state']['timestamp'], '%Y-%m-%d %H:%M:%S')
+        loaded['last_state']['timestamp'] = dt.strptime(
+            loaded['last_state']['timestamp'],
+            '%Y-%m-%d %H:%M:%S'
+        )
         self.last_state = md.State(**loaded['last_state'])
-
-    def _revive_body(self) -> Body:
-        """"""
-
-    def _revive_mind(self) -> Mind:
-        """"""
 
     def revive_creature(self) -> Creature:
         """"""
-        return Creature(
+        pet = Creature(
             self.__parameters,
             self.name,
             self.birthdate,
-            self._revive_body(),
-            self._revive_mind()
+            Body(**self.last_state.body),
+            Mind(**self.last_state.mind)
         )
-
-    def _new_body(self) -> Body:
-        """"""
-        return Body(
-            health=floor(self.__parameters.cub.health.max / 3),
-            stamina=floor(self.__parameters.cub.stamina.max / 5),
-            hunger=floor(self.__parameters.cub.hunger.max),
-            thirst=floor(self.__parameters.cub.thirst.max / 1.5),
-            intestine=0,
-        )
-
-    def _new_mind(self) -> Mind:
-        """"""
-        return Mind(
-            joy=0,
-            activity=min(self.__parameters.cub.activity),
-            anger=floor(max(self.__parameters.cub.anger) / 4),
-            anxiety=max(self.__parameters.cub.anxiety),
-        )
+        hours = (dt.now() - self.last_state.timestamp).seconds // 3600
+        for _ in range(hours):
+            pet.apply_tick_changes()
+        return pet
 
     def new_creature(self) -> Creature:
         """"""
@@ -226,6 +208,17 @@ class CreatureFactory:
             self.__parameters,
             self.name,
             dt.now(),
-            self._new_body(),
-            self._new_mind()
+            Body(
+                health=floor(self.__parameters.cub.health.max / 3),
+                stamina=floor(self.__parameters.cub.stamina.max / 5),
+                hunger=floor(self.__parameters.cub.hunger.max),
+                thirst=floor(self.__parameters.cub.thirst.max / 1.5),
+                intestine=0,
+            ),
+            Mind(
+                joy=0,
+                activity=min(self.__parameters.cub.activity),
+                anger=floor(max(self.__parameters.cub.anger) / 4),
+                anxiety=max(self.__parameters.cub.anxiety),
+            )
         )

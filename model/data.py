@@ -90,16 +90,28 @@ class State:
     anxiety: float
 
     @property
-    def dict(self) -> dict:
+    def body(self) -> dict:
         return {
-            'timestamp': self.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
             'health': self.health,
             'stamina': self.stamina,
             'hunger': self.hunger,
             'thirst': self.thirst,
             'intestine': self.intestine,
+        }
+
+    @property
+    def mind(self) -> dict:
+        return {
             'joy': self.joy,
             'activity': self.activity,
             'anger': self.anger,
             'anxiety': self.anxiety,
         }
+
+    @property
+    def dict(self) -> dict:
+        return (
+            {'timestamp': self.timestamp.strftime('%Y-%m-%d %H:%M:%S')}
+            | self.body
+            | self.mind
+        )
