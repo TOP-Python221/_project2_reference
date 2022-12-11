@@ -39,3 +39,13 @@ def uni_max(obj):
     else:
         return max(obj)
 
+
+def within_range(value: Real, left: Real, right: Real) -> Real:
+    if value < left:
+        return left
+    elif value > right:
+        return right
+    else:
+        return value
+
+

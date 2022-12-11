@@ -87,7 +87,7 @@ class Creature(ABC):
         ranges = self.__kind.age_ranges(self.age)
         for param, value in self.body.__dict__.items():
             result += getattr(ranges, param)[value]
-        # сильно тестировать необходимость применения данных формул — вместо взаимного сглаживания наблюдается взаимный разгон эмоциональных показателей
+        # TODO: сильно тестировать необходимость применения данных формул — вместо взаимного сглаживания наблюдается взаимный разгон эмоциональных показателей
         # result['joy'] -= ranges.anger_coeff * result['anger']
         # result['anger'] -= ranges.joy_coeff * result['joy']
         return result
@@ -97,33 +97,31 @@ class Creature(ABC):
         ranges = self.__kind.age_ranges(self.age)
         deltas = self._tick_changes()
         for attr in ('activity', 'anxiety'):
-            new_value = getattr(self.mind, attr) + deltas.pop(attr)
-            if new_value < (range_min := uf.uni_min(getattr(ranges, attr))):
-                new_value = range_min
-            elif new_value > (range_max := uf.uni_max(getattr(ranges, attr))):
-                new_value = range_max
+            new_value = uf.within_range(
+                getattr(self.mind, attr) + deltas.pop(attr),
+                uf.uni_min(getattr(ranges, attr)),
+                uf.uni_max(getattr(ranges, attr))
+            )
             setattr(self.mind, attr, new_value)
 
         for attr, coeff in (('joy', 'activity'), ('anger', 'anxiety')):
-            new_value = getattr(self.mind, attr) + getattr(self.mind, coeff) * deltas.pop(attr)
-            if new_value < (range_min := uf.uni_min(getattr(ranges, attr))):
-                new_value = range_min
-            elif new_value > (range_max := uf.uni_max(getattr(ranges, attr))):
-                new_value = range_max
+            new_value = uf.within_range(
+                getattr(self.mind, attr) + getattr(self.mind, coeff) * deltas.pop(attr),
+                uf.uni_min(getattr(ranges, attr)),
+                uf.uni_max(getattr(ranges, attr))
+            )
             setattr(self.mind, attr, new_value)
 
         for attr, delta in deltas.items():
-            # if attr in dir(self.body):
-            new_value = getattr(self.body, attr) + delta
-            range_min = uf.uni_min(getattr(ranges, attr))
-            if new_value < range_min:
-                new_value = range_min
-            range_max = uf.uni_max(getattr(ranges, attr))
-            if new_value > range_max:
-                new_value = range_max
+            new_value = uf.within_range(
+                getattr(self.body, attr) + delta,
+                uf.uni_min(getattr(ranges, attr)),
+                uf.uni_max(getattr(ranges, attr))
+            )
             setattr(self.body, attr, new_value)
 
-        pprint(self.state)
+        if uc.DEBUG:
+            pprint(self.state)
 
     def __str__(self):
         age = self.age
@@ -152,7 +150,6 @@ class CreatureFactory:
     """
 
     """
-
     # noinspection PyTypeChecker
     def __init__(self):
         self.__parameters: md.KindParameters = None

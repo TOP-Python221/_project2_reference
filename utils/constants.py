@@ -31,6 +31,8 @@ class Matureness(str, Enum):
 
 BASE_DIR = Path(path[0])
 
+DEBUG = True
+
 separated_floats_pattern = reg_pattern_compile(
     r'^((?P<float>\d+\.\d+)(?P<sep>[,; ])?){2,}$'
 )
