@@ -43,9 +43,7 @@ class TestActiveRead:
     @mark.xfail
     @mark.parametrize('file_path', active_unhappy_keys_files())
     def test_unhappy_keys(self, file_path, active_keys, active_state, active_state_keys):
-        data = PM.read_active(file_path)
-        assert set(data) == active_keys, f'{file_path.name}'
-        assert set(data[active_state]) == active_state_keys, f'{file_path.name}'
+        PM.read_active(file_path)
 
 
 class TestActiveWrite:
