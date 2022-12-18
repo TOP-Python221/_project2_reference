@@ -13,6 +13,10 @@ from . import data as md
 from ..utils import constants as uc
 
 
+class JSONEmpty(Exception):
+    pass
+
+
 class PersistenceManager:
     """
 
@@ -65,7 +69,9 @@ class PersistenceManager:
         try:
             with open(active_path, encoding='utf-8') as filein:
                 data = jload(filein)
-        except (JSONDecodeError, FileNotFoundError):
+            if not data:
+                raise JSONEmpty
+        except (JSONEmpty, JSONDecodeError, FileNotFoundError):
             data = {}
         return data
 
