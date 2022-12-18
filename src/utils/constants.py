@@ -60,3 +60,7 @@ RangesDict = TypedDict('RangesDict', {
 })
 MatureDays = Annotated[Sequence[int], 3] | Annotated[Sequence[int], 4]
 
+
+ACTIVE_STATE_KEY = 'last_state'
+ACTIVE_KEYS = {'kind', 'name', 'birthdate', ACTIVE_STATE_KEY}
+ACTIVE_STATE_KEYS = {'timestamp', 'health', 'stamina', 'hunger', 'thirst', 'intestine', 'joy', 'activity', 'anger', 'anxiety'}

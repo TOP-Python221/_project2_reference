@@ -16,6 +16,10 @@ from ..utils import constants as uc
 class JSONEmpty(Exception):
     pass
 
+class JSONCorrupted(Exception):
+    def __init__(self, file_path):
+        super().__init__(f"'{file_path!s}' is corrupted")
+
 
 class PersistenceManager:
     """
@@ -73,6 +77,9 @@ class PersistenceManager:
                 raise JSONEmpty
         except (JSONEmpty, JSONDecodeError, FileNotFoundError):
             data = {}
+        else:
+            if set(data) != uc.ACTIVE_KEYS or set(data[uc.ACTIVE_STATE_KEY]) != uc.ACTIVE_STATE_KEYS:
+                raise JSONCorrupted(active_path.name)
         return data
 
     @classmethod
