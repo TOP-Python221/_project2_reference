@@ -58,29 +58,29 @@ class PersistenceManager:
         )
 
     @classmethod
-    def read_states(cls, states_path: uc.pathlike = None) -> dict:
+    def read_active(cls, active_path: uc.pathlike = None) -> dict:
         """"""
-        if not states_path:
-            states_path = cls.default_states_path
+        if not active_path:
+            active_path = cls.default_states_path
         try:
-            with open(states_path, encoding='utf-8') as filein:
+            with open(active_path, encoding='utf-8') as filein:
                 data = jload(filein)
         except (JSONDecodeError, FileNotFoundError):
             data = {}
         return data
 
     @classmethod
-    def write_states(cls, data: dict, states_path: uc.pathlike = None):
+    def write_active(cls, data: dict, active_path: uc.pathlike = None):
         """"""
-        if not states_path:
-            states_path = cls.default_states_path
+        if not active_path:
+            active_path = cls.default_states_path
 
-        with open(states_path, 'w', encoding='utf-8') as fileout:
+        with open(active_path, 'w', encoding='utf-8') as fileout:
             jdump(data, fileout)
 
 
 if __name__ == '__main__':
-    d = PersistenceManager.read_states()
+    d = PersistenceManager.read_active()
     pprint(d)
 
     # kr = PersistenceManager.read_parameters(uc.Kind.CAT)

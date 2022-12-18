@@ -30,7 +30,7 @@ class Matureness(str, Enum):
     ELDER = 'elder'
 
 
-BASE_DIR = Path(path[0]).parent
+BASE_DIR = Path(path[0])
 SOURCE_DIR = BASE_DIR / 'src'
 DATA_DIR = BASE_DIR / 'data'
 

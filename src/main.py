@@ -13,7 +13,7 @@ from src import *
 class Controller:
     def __init__(self):
         factory = CreatureFactory()
-        active_pet = PersistenceManager.read_states('../data/tests/states_test.json')
+        active_pet = PersistenceManager.read_active('../data/tests/active_empty_dict.json')
         if active_pet:
             factory.creature_data = active_pet
             self.pet = factory.revive_creature()
