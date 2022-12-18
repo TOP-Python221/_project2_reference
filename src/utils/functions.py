@@ -6,7 +6,7 @@ __all__ = [
 from numbers import Real
 
 # импорт дополнительных модулей текущего пакета
-import utils.types as ut
+from . import types as ut
 
 
 

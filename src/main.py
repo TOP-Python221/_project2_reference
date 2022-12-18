@@ -7,14 +7,13 @@ from pprint import pprint
 from threading import Event
 
 # импорт дополнительных пакетов и модулей
-from model import *
-from utils import *
+from src import *
 
 
 class Controller:
     def __init__(self):
         factory = CreatureFactory()
-        active_pet = PersistenceManager.read_states('model/states_test.json')
+        active_pet = PersistenceManager.read_states('../data/tests/states_test.json')
         if active_pet:
             factory.creature_data = active_pet
             self.pet = factory.revive_creature()

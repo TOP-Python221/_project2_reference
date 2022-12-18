@@ -9,8 +9,8 @@ from datetime import datetime as dt
 from itertools import pairwise
 
 # импорт дополнительных модулей других пакетов
-import utils.constants as uc
-import utils.types as ut
+from ..utils import constants as uc
+from ..utils import types as ut
 
 
 class KindParameters:

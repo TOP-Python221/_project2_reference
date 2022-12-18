@@ -40,7 +40,7 @@ enum Kind {
 
 hide abstract empty members
 abstract class dict
-abstract class Thread
+'abstract class Thread
 
 
 together {
@@ -87,13 +87,13 @@ CreatureFactory o-- KindParameters
 'dummy - Matureness
 
 
-hide BackgroundCycleThread empty members
-class BackgroundCycleThread {
-    +{static}run()
-}
-Thread <|--- BackgroundCycleThread
-'BackgroundCycleThread --* Creature::continuous_run
-Creature::continuous_run *-left- BackgroundCycleThread
+'hide BackgroundCycleThread empty members
+'class BackgroundCycleThread {
+'    +{static}run()
+'}
+'Thread <|--- BackgroundCycleThread
+'BackgroundCycleThread -right-* Creature::continuous_tick
+'Creature::continuous_run *-left- BackgroundCycleThread
 
 
 class CreatureActions {
@@ -123,7 +123,7 @@ class CreatureActions {
 'StatesCalculator --> Creature
 'StatesCalculator <.. KindParameters
 
-
+'together {
 class Body {
     +health: int
     +stamina: int
@@ -131,8 +131,6 @@ class Body {
     +thirst: int
     +intestine: int
 }
-Body --o Creature::body
-
 
 class Mind {
     #{static}patterns: DictOfRanges
@@ -145,6 +143,11 @@ class Mind {
     __
 '    +tick_changes(\n\tparameters: dict\n\t\t\t) -> dict
 }
+'}
+'Body -right-o Creature::body
+'Body <|-[hidden]- Mind
+'Mind -right-o Creature::mind
+Body --o Creature::body
 Mind --o Creature::mind
 Mind o-- DictOfRanges
 'DictOfRanges --o Mind::patterns

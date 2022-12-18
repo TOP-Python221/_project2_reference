@@ -5,7 +5,7 @@ __all__ = [
 
 # pip install schedule
 # импорт сторонних пакетов
-from schedule import run_pending, idle_seconds
+from schedule import run_pending
 
 # импорт из стандартной библиотеки
 from dataclasses import dataclass
@@ -17,12 +17,12 @@ from threading import Thread, Event
 from time import sleep
 
 # импорт дополнительных модулей текущего пакета
-import model.data as md
-import model.files_io as fio
+from . import data
+from . import files_io as fio
 # импорт дополнительных модулей других пакетов
-import utils.constants as uc
-import utils.functions as uf
-import utils.types as ut
+from ..utils import constants as uc
+from ..utils import functions as uf
+from ..utils import types as ut
 
 
 @dataclass
@@ -63,7 +63,7 @@ class Creature:
 
     """
     def __init__(self,
-                 kind_parameters: md.KindParameters,
+                 kind_parameters: data.KindParameters,
                  name: str,
                  birthdate: dt,
                  body: Body,
@@ -81,8 +81,8 @@ class Creature:
         return (dt.now() - self.birthdate).days
 
     @property
-    def state(self) -> md.State:
-        return md.State(
+    def state(self) -> data.State:
+        return data.State(
             timestamp=dt.now(),
             **self.body.__dict__,
             **self.mind.__dict__,
@@ -214,10 +214,10 @@ class CreatureFactory:
     """
     # noinspection PyTypeChecker
     def __init__(self):
-        self.__parameters: md.KindParameters = None
+        self.__parameters: data.KindParameters = None
         self.name: str = None
         self.birthdate: dt = None
-        self.last_state: md.State = None
+        self.last_state: data.State = None
 
     def __bool__(self):
         return all(map(bool, self.__dict__.values()))
@@ -248,7 +248,7 @@ class CreatureFactory:
             loaded['last_state']['timestamp'],
             '%Y-%m-%d %H:%M:%S'
         )
-        self.last_state = md.State(**loaded['last_state'])
+        self.last_state = data.State(**loaded['last_state'])
 
     def revive_creature(self) -> Creature:
         """"""

@@ -8,17 +8,17 @@ from json import load as jload, dump as jdump, JSONDecodeError
 from pprint import pprint
 
 # импорт дополнительных модулей текущего пакета
-import model.data as md
+from . import data as md
 # импорт дополнительных модулей других пакетов
-import utils.constants as uc
+from ..utils import constants as uc
 
 
 class PersistenceManager:
     """
 
     """
-    default_parameters_path = uc.BASE_DIR / 'model/parameters.json'
-    default_states_path = uc.BASE_DIR / 'model/states.json'
+    default_parameters_path = uc.DATA_DIR / 'production/parameters.json'
+    default_states_path = uc.DATA_DIR / 'production/states.json'
 
     @classmethod
     def read_parameters(cls, kind: uc.Kind, parameters_path: uc.pathlike = None) -> md.KindParameters:
